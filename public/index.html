@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+
+	<div id="root"></div>
+
+	<script>
+		function Clazz() {}
+		Clazz.prototype.setAttr = function(key, value) {
+			this[key] = value
+		}
+
+		// 开始
+		const originSetAttr = Clazz.prototype.setAttr
+		Clazz.prototype.setAttr = function(key, value) {
+			originSetAttr.apply(this, [key, value])
+			if (!this.store) {
+				this.store = {
+					[key]: value
+				}
+			} else {
+				this.store[key] = value
+			}
+			Object.defineProperty(this, key, {
+				get: function() {
+					return this.store[key]
+				},
+				set: function(value) {
+					//this.store[key] = value
+				}
+			})
+		}
+		// 结束
+
+		var clazz1 = new Clazz()
+		var clazz2 = new Clazz()
+
+		clazz1.setAttr('name', 'world')
+		clazz1.setAttr('sex', 'male')
+		clazz1.name = 'hello'
+		clazz1.sex = 'female'
+
+		clazz2.setAttr('name', 'world2')
+		clazz2.name = 'world222'
+
+		console.warn(clazz1.name, clazz1.sex) // world, male
+		console.warn(clazz2.name) // world2
+	</script>
+</body>
+</html>
